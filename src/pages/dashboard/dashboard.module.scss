@@ -1,0 +1,31 @@
+.dashboard{
+    background-color: white;
+    width: 20%;
+    padding:30px;
+    .trendingHeadline{
+        font-size: 20px;
+        font-weight: bolder;
+        margin-bottom: 10px;
+        font-family: arial,'Courier New', Courier, monospace;
+    }
+    .trendList{
+        list-style-type: none;
+        margin-top: 10px;
+        color:rgb(132, 117, 117);
+        font-family: Arial, Helvetica, sans-serif;
+        .trendingItem{
+            padding:5px;
+            .subjectLink{
+                text-decoration: none;
+                color: currentColor;
+            }
+            &:hover{
+                cursor: pointer;
+                background-color: #ddd;
+            }
+        }
+    }
+    .search{
+        
+    }
+}
