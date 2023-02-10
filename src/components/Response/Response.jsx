@@ -1,20 +1,32 @@
-import { useEffect, useRef, useState } from 'react'
+import React,{ useEffect, useLayoutEffect, useRef, useState } from 'react'
 import useGetResponse from '../../customHooks/useGetResponse'
+import ModalCustom from '../SearchBox/Modal/Modal'
+import Execute from './components/Execute'
 import styles from './Response.module.scss'
 export default function Response({ prompt, onLoadComplete }) {
     const [numDots, setNumDots] = useState(1)
     const asked = useRef(false)
-    const {ask, response, error, isLoading:loading} = useGetResponse()
+    const [modal , setModal] = useState(null)
+    const countRetry = useRef(0)
+    const [renderer, setRenderer] = useState(false)
+    const {ask, data:response, error, isLoading:loading} = useGetResponse()
+    const execute = useRef(null)
     useEffect(()=>{
-        if(asked.current===false) {
-            asked.current = true
-            return
-        }
+        // if(asked.current===false) {
+        //     asked.current = true
+        //     return
+        // }
         if(prompt){
-            ask(prompt)
+            ask(prompt,{
+                onError:()=>{
+                    if(countRetry.current<8){
+                        ask(prompt)
+                        countRetry.current++
+                    }
+                }
+            })
         }
     },[ask])
-
 
     useEffect(()=>{
         if(!loading ){
@@ -27,21 +39,66 @@ export default function Response({ prompt, onLoadComplete }) {
         return ()=>clearInterval(interval)
     },[loading])
     
-    return (
-        <div className={styles.response}>
-            {
-                loading?
-                <div className={styles.loading}>
-                    {
-                        ".".repeat(numDots)
-                    }
-                </div>
-                :
-                <pre className={styles.response__content}>
-                    
-                    {response?.function_def}
-                </pre>
+    useLayoutEffect(()=>{
+        if(!response){
+            execute.current=null
+            return
+        }
+
+        try{
+            window[response?.name]=null
+            eval(`${response?.function_def}`)
+            execute.current=(window[response?.name])
+            setRenderer(prev=>!prev)
+            countRetry.current=0
+        } catch(e){
+            if(countRetry.current<8){
+                ask(prompt)
+                countRetry.current++
             }
-        </div>
+        }
+    },[response])
+    
+    function handleExecution(){
+        setModal(true)
+    }
+
+    return (
+        <React.Fragment>
+            <div className={styles.response}>
+                {
+                    loading?
+                    <div className={styles.loading}>
+                        {
+                            ".".repeat(numDots)
+                        }
+                    </div>
+                    :
+                    <pre className={`${styles.response__content} ${error?styles.error:""}`}>
+                        <div className={styles.executeWrapper}>
+                            <button onClick={()=>{ countRetry.current=0 ;ask(prompt) }} className={styles.retry}>
+                                        retry
+                            </button>
+                            {
+                                execute.current&&
+                                <button onClick={handleExecution} className={styles.execute}>
+                                    Execute
+                                </button>
+                            }
+                        </div>
+                        {error? "unable to create function ":response?.function_def}
+                    </pre>
+                }
+            </div>
+            <ModalCustom 
+                modal = {modal} 
+                setModal={setModal} 
+                title={
+                    <span style={{color: 'red',fontWeight: 'bold'}}>{response?.name?.split("_")?.join(" ")}</span>
+                }
+            >
+                <Execute func={execute.current} params={response?.parameter_names??[]}/>
+            </ModalCustom>
+        </React.Fragment>
     )
 }

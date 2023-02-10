@@ -1,18 +1,22 @@
-.response{
+.ask{
     display: block;
     width: 100%;
     margin:10px 0;
-    $bgcolor: rgb(47, 140, 163);
-    .response__content,.loading{
+    $bgcolor: rgb(111, 163, 47);
+    opacity: 1;
+    animation: fade 0.4s ease-in-out 1;
+    .ask__content{
         position: relative;
-        margin-left: 10px;
+        margin-right: 10px;
+        margin-left: auto;
         background-color: $bgcolor;
         border-radius: 7px;
         max-width: 60%;
         min-height: 50px;
         padding: 20px;
         color: white;
-        &::before{
+        user-select: all;
+        &::after{
             content: "";
             display: block;
             position: absolute;
@@ -20,11 +24,15 @@
             width: 10px;
             rotate: -45deg;
             background-color: $bgcolor;
-            left:-5px;
+            right:-5px;
         }
     }
-
-    .loading{
-        color: blanchedalmond;
+}
+@keyframes fade {
+    0%{
+        background-color: gray;
+    }
+    100%{
+        background-color: transparent;
     }
 }

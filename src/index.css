@@ -3,7 +3,13 @@
   padding: 0;
   box-sizing: border-box;
   font-family: arial;
+
 }
+*::selection{
+  background: #35eaed;
+  color: #fff;
+}
+
 body {
   overflow-y: hidden;
   position: relative;

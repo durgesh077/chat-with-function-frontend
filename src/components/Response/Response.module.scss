@@ -12,6 +12,7 @@
         min-height: 50px;
         padding: 20px;
         color: white;
+        // user-select: all;
         &::before{
             content: "";
             display: block;
@@ -21,6 +22,33 @@
             rotate: -45deg;
             background-color: $bgcolor;
             left:-5px;
+        }
+        & > .executeWrapper {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            
+            & > .execute , &>.retry{
+                padding: 5px;
+                box-shadow: 5px 5px 5px black;
+                width:6em;
+                background-color: cyan;
+                cursor: pointer;
+                border: none;
+                outline: none;
+                margin: 1px;
+            }
+
+            &:active{
+                box-shadow: 2px 2px 5px black;    
+            }
+        }
+    }
+    .error{
+        background-color: rgb(163, 47, 47);
+        color: white;
+        &::before{
+            background-color: rgb(163, 47, 47);
         }
     }
 

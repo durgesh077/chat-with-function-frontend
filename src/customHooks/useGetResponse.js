@@ -9,7 +9,7 @@ async function query(prompt){
 }
 
 export default function useGetResponse(){
-    const {mutate:ask, data:response,status,isLoading, error} = useMutation(query,{
+    const {mutate:ask, data,status,isLoading, error} = useMutation(query,{
         retry: 0,
         onError: (error) => {
             console.error(error)
@@ -17,7 +17,7 @@ export default function useGetResponse(){
     })
     return {
             ask, 
-            response, 
+            data, 
             isLoading, 
             error
         }

@@ -1,9 +1,16 @@
 import React, { useContext, useEffect, useState } from 'react'
+import Ask from '../../components/Ask/Ask'
 import Response from '../../components/Response/Response'
 import SearchBox from '../../components/SearchBox/SearchBox'
 import styles from './Home.module.scss'
+const defaultPrompts = ["take two strings as parameter and return contatenation of them in upper case",
+                        "return object passed in parameter", 
+                        "add two number",
+                        "return the sum of all numbers in an array"]
 const Home = () => {
-    const [prompts, setPrompts] = useState([])
+    //choose any of the above prompts randomly
+    const randomPrompt = defaultPrompts[Math.floor(Math.random() * defaultPrompts.length)]
+    const [prompts, setPrompts] = useState([randomPrompt])
     const chatBoxRef = React.useRef(null)
     function goToLast(){
         setTimeout(()=>{
@@ -23,13 +30,16 @@ const Home = () => {
                 {
                     prompts.map(prompt=>{
                         return (
-                            <Response onLoadComplete={goToLast} key={prompt} prompt={prompt}/>
+                            <React.Fragment>
+                                <Ask query = {prompt}/>
+                                <Response onLoadComplete={goToLast} key={prompt} prompt={prompt}/>
+                            </React.Fragment>
                         )
                     })
                 }
                 </div>
             </div>
-            <SearchBox placeholder="Ask functionality" onEnter={onSend} className={styles.searchBox}/>
+            <SearchBox placeholder="Ask functionality e.g: print hello world" onEnter={onSend} className={styles.searchBox}/>
         </div>
     )
 }
