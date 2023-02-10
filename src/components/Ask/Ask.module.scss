@@ -1,0 +1,30 @@
+.response{
+    display: block;
+    width: 100%;
+    margin:10px 0;
+    $bgcolor: rgb(47, 140, 163);
+    .response__content,.loading{
+        position: relative;
+        margin-left: 10px;
+        background-color: $bgcolor;
+        border-radius: 7px;
+        max-width: 60%;
+        min-height: 50px;
+        padding: 20px;
+        color: white;
+        &::before{
+            content: "";
+            display: block;
+            position: absolute;
+            height: 10px;
+            width: 10px;
+            rotate: -45deg;
+            background-color: $bgcolor;
+            left:-5px;
+        }
+    }
+
+    .loading{
+        color: blanchedalmond;
+    }
+}

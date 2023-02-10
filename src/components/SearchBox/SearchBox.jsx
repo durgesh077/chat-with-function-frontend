@@ -11,8 +11,10 @@ const SearchBox = ({ onEnter,onChange,className,placeholder="" }) => {
 
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
-      if(onEnter)
+      if(onEnter){
         onEnter(inputValue);
+        setInputValue("");
+      }
     }
   };
 
@@ -29,10 +31,10 @@ const SearchBox = ({ onEnter,onChange,className,placeholder="" }) => {
       {
         inputValue.length > 0 &&
         <button className={styles.clearButton} onClick={()=>{
+          onEnter(inputValue);
           setInputValue("");
-          onEnter("");
           ref.current.focus();
-        }}>&times;</button>
+        }}>&#8594;</button>
       }
     </div>
   );
