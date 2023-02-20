@@ -5,38 +5,22 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    .h1{
+    .head{
         text-align: center;
         color: white;
         height: min-content;
         padding:5px;
         width: 100%;
         margin-top: 0;
+        margin-bottom: 4px;
         display: block;
         box-shadow: 0 6px 6px -6px black;
+        position: relative;
         background-color: darkcyan;
-    }
-    .searchBox{
-        position: absolute;
-        bottom: 4px;
-        width: 80%;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 1;
-    }
-    .wrapper_chat{
-        height: 100%;
-        overflow: hidden;
-        padding-top: 20px;
-        padding-bottom: 50px;
-        .chats{
-            background-color: whitesmoke;
-            height: 100%;
-            overflow-y: scroll;
-            // padding: 100px;
-            &::-webkit-scrollbar{
-                width: 0px;
-            }
+        h1{
+            display: inline-block;
         }
+
     }
 }
+

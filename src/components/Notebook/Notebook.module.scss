@@ -1,0 +1,24 @@
+.Tabs{
+    .TabList{
+        display: flex;
+        place-content: space-around;
+        list-style-type: none;
+        flex-grow: 1;
+        cursor: pointer;
+        .Tab{
+        padding: 5px;
+        text-align: center;
+        border: 0;
+        width: 100%;
+        outline: none;
+        transition: background-color 0.3s ease;
+        background-color: lightblue;
+        }
+        .Tab-Selected {
+            border-bottom: 3px solid black;
+            background-color: darkcyan;
+            color: white;
+        }
+    }
+    
+}

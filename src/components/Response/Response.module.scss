@@ -3,7 +3,7 @@
     width: 100%;
     margin:10px 0;
     $bgcolor: rgb(47, 140, 163);
-    .response__content,.loading{
+    .response_content,.loading{
         position: relative;
         margin-left: 10px;
         background-color: $bgcolor;
@@ -13,6 +13,16 @@
         padding: 20px;
         color: white;
         // user-select: all;
+        .response_checkbox {
+            position: absolute;
+            display: block;
+            width: 20px;
+            height: 20px;
+            top: 3px;
+            // right:0;
+            left: calc(100% + 5px);
+            border-radius: 100%;
+        }
         &::before{
             content: "";
             display: block;

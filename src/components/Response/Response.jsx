@@ -1,21 +1,17 @@
 import React,{ useEffect, useLayoutEffect, useRef, useState } from 'react'
 import useGetResponse from '../../customHooks/useGetResponse'
-import ModalCustom from '../SearchBox/Modal/Modal'
+import ModalCustom from '../Modal/Modal'
 import Execute from './components/Execute'
 import styles from './Response.module.scss'
-export default function Response({ prompt, onLoadComplete }) {
+export default function Response({ prompt, onLoadComplete , collection_deploy }) {
     const [numDots, setNumDots] = useState(1)
-    const asked = useRef(false)
+    const [checked, setChecked] = useState(false);
     const [modal , setModal] = useState(null)
     const countRetry = useRef(0)
-    const [renderer, setRenderer] = useState(false)
+    const [renderer , setRenderer] = useState(false);
     const {ask, data:response, error, isLoading:loading} = useGetResponse()
     const execute = useRef(null)
     useEffect(()=>{
-        // if(asked.current===false) {
-        //     asked.current = true
-        //     return
-        // }
         if(prompt){
             ask(prompt,{
                 onError:()=>{
@@ -63,6 +59,16 @@ export default function Response({ prompt, onLoadComplete }) {
         setModal(true)
     }
 
+    function handleChange(e){
+        if(checked === false)
+            collection_deploy.current.push([response?.name, response?.function_def])
+        else 
+            collection_deploy.current = collection_deploy.current.filter(([func_name])=>{
+            return func_name !== response?.name
+            })
+
+        setChecked(checked=>!checked);
+    }
     return (
         <React.Fragment>
             <div className={styles.response}>
@@ -74,19 +80,22 @@ export default function Response({ prompt, onLoadComplete }) {
                         }
                     </div>
                     :
-                    <pre className={`${styles.response__content} ${error?styles.error:""}`}>
+                    <pre className={`${styles.response_content} ${error?styles.error:""}`}>
                         <div className={styles.executeWrapper}>
                             <button onClick={()=>{ countRetry.current=0 ;ask(prompt) }} className={styles.retry}>
                                         retry
                             </button>
                             {
-                                execute.current&&
-                                <button onClick={handleExecution} className={styles.execute}>
-                                    Execute
-                                </button>
+                                execute.current?
+                                    <button onClick={handleExecution} className={styles.execute}>
+                                        Execute
+                                    </button>
+                                :
+                                null
                             }
                         </div>
                         {error? "unable to create function ":response?.function_def}
+                        <input type="checkbox" value={checked} className={styles.response_checkbox} onChange={handleChange}/>
                     </pre>
                 }
             </div>
