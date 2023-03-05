@@ -1,12 +1,11 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import Func from '../../components/Func/Func';
-import constants from '../../constants/constants';
 import styles from './DeployedFunctionPanel.module.scss'
 function DeployedFunctionPanel() {
     const [funcs , setFuncs] = useState([]);
     useEffect(() => {
-    axios.get(constants.metacall_base+"/api/inspect").then(res=>res.data).then(data=>{
+    axios.get("/api/getDeployments").then(res=>res.data).then(data=>{
         data= data?.[0]?.packages?.node?.[0]?.scope?.funcs;
         console.log(data)
         if(!data)

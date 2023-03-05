@@ -42,14 +42,17 @@ function DeployPanel() {
             scripts:[file.name]
         }])
 
-        zip.generateAsync({type:"blob"}).then(async(generatedZipFile)=>{
+        zip.generateAsync({type:"blob",
+                            mimeType: 'application/zip-x-compress'
+                        }).then(async(generatedZipFile)=>{
             const fd = new FormData();
             fd.append("jsons",metacall_json);
-            fd.append("file",generatedZipFile);
+            fd.append("blob",generatedZipFile,file.name);
+            fd.append("name",file.name);
+            fd.append("runners",JSON.stringify(["node"]));
             try{
-                await axios.post(constants.metacall_base+`/api/package/create`,fd);
-                let data = await axios.post(constants.metacall_base+`/api/deploy/create`);
-                data = data.data;
+                const create_response = await axios.post(`/api/create`,fd).then(res=>res.data);
+                let data = await axios.post(`/api/deploy`).then(res=>res.data);
                 localStorage.setItem("suffix",data.suffix);
                 alert('deployed '+file.name+' successfully');
             }catch(err){
