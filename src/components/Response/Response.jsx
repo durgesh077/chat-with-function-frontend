@@ -1,4 +1,6 @@
 import React,{ useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faRedo } from '@fortawesome/free-solid-svg-icons'
 import useGetResponse from '../../customHooks/useGetResponse'
 import ModalCustom from '../Modal/Modal'
 import Execute from './components/Execute'
@@ -69,9 +71,25 @@ export default function Response({ prompt, onLoadComplete , collection_deploy })
 
         setChecked(checked=>!checked);
     }
+
+    function handleEffectMounseIn(e){
+        const checkbox = e.target.querySelector("[class*=response_checkbox]")
+        checkbox.style.opacity=1;
+        const menus = e.target.querySelector("[class*=executeWrapper]")
+        menus.style.opacity=1;
+    }   
+    function handleEffectMounseOut(e){
+        const checkbox = e.target.querySelector("[class*=response_checkbox]")
+        if (!checkbox.checked)
+            checkbox.style.opacity=0;
+        const menus = e.target.querySelector("[class*=executeWrapper]")
+        menus.style.opacity=0;    
+    }
     return (
         <React.Fragment>
-            <div className={styles.response}>
+            <div className={styles.response}
+                onMouseEnter={handleEffectMounseIn}
+                onMouseLeave={handleEffectMounseOut}>
                 {
                     loading?
                     <div className={styles.loading}>
@@ -80,10 +98,10 @@ export default function Response({ prompt, onLoadComplete , collection_deploy })
                         }
                     </div>
                     :
-                    <pre className={`${styles.response_content} ${error?styles.error:""}`}>
-                        <div className={styles.executeWrapper}>
+                    <pre className={`${styles.response_content} ${error?styles.error:""}`} >
+                        <div className={styles.executeWrapper} id='executionMenu'>
                             <button onClick={()=>{ countRetry.current=0 ;ask(prompt) }} className={styles.retry}>
-                                        retry
+                                <FontAwesomeIcon icon={faRedo}/>
                             </button>
                             {
                                 execute.current?
@@ -94,8 +112,12 @@ export default function Response({ prompt, onLoadComplete , collection_deploy })
                                 null
                             }
                         </div>
-                        {error? "unable to create function ":response?.function_def}
-                        <input type="checkbox" value={checked} className={styles.response_checkbox} onChange={handleChange}/>
+                        <span className={styles.definition_body}>{error? "unable to create function ":response?.function_def}</span>
+                        <input type="checkbox" 
+                                value={checked} 
+                                className={styles.response_checkbox} 
+                                onChange={handleChange}
+                                id= 'responseSelectionCheckbox'/>
                     </pre>
                 }
             </div>

@@ -5,7 +5,7 @@ import Ask from '../../components/Ask/Ask'
 import Response from '../../components/Response/Response'
 import SearchBox from '../../components/SearchBox/SearchBox'
 import styles from './DeployPanel.module.scss'
-import constants from '../../constants/constants';
+import SelectionBox from '../../components/SelectionBox/SelectionBox';
 const defaultPrompts = ["take two strings as parameter and return contatenation of them in upper case",
                         "return object passed in parameter", 
                         "add two number",
@@ -62,28 +62,31 @@ function DeployPanel() {
 
     }
     return (
-        <div className={styles.home}>
-            <div className={styles.wrapper_chat}>
-                <div className={styles.chats} ref = {chatBoxRef} >
-                {
-                    prompts.map(prompt=>{
-                        return (
-                            <React.Fragment>
-                                <Ask query = {prompt}/>
-                                <Response onLoadComplete={goToLast} key={prompt} prompt={prompt} collection_deploy={collection_deploy}/>
-                            </React.Fragment>
-                        )
-                    })
-                }
+        <React.Fragment>
+            <div className={styles.home}>
+                <div className={styles.wrapper_chat}>
+                    <div className={styles.chats} ref = {chatBoxRef} >
+                    {
+                        prompts.map(prompt=>{
+                            return (
+                                <React.Fragment>
+                                    <Ask query = {prompt}/>
+                                    <Response onLoadComplete={goToLast} key={prompt} prompt={prompt} collection_deploy={collection_deploy}/>
+                                </React.Fragment>
+                            )
+                        })
+                    }
+                    </div>
+                </div>
+                <div className={styles.controller}>
+                    <SearchBox placeholder="Ask functionality e.g: print hello world" onEnter={onSend} className={styles.SearchBox}/>
+                    {/* <button onClick={deploy}>
+                        deploy selected Functions
+                    </button> */}
                 </div>
             </div>
-            <div className={styles.controller}>
-                <SearchBox placeholder="Ask functionality e.g: print hello world" onEnter={onSend} className={styles.SearchBox}/>
-                <button onClick={deploy}>
-                    deploy selected Functions
-                </button>
-            </div>
-        </div>
+            <SelectionBox selections={new Array(50).fill("hello")} title={"Selected Functions"}/>
+        </React.Fragment>
     )
 }
 

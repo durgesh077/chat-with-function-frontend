@@ -12,7 +12,15 @@
         min-height: 50px;
         padding: 20px;
         color: white;
-        // user-select: all;
+        &:hover{
+            box-shadow:  0 0 2rem rgba(0,123,255,.25);
+        }
+        .definition_body{
+            user-select: all;
+            &::selection{
+                background-color: rgb(89, 160, 54);
+            }
+        }
         .response_checkbox {
             position: absolute;
             display: block;
@@ -22,6 +30,8 @@
             // right:0;
             left: calc(100% + 5px);
             border-radius: 100%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
         &::before{
             content: "";
@@ -36,17 +46,22 @@
         & > .executeWrapper {
             position: absolute;
             right: 5px;
-            top: 5px;
-            
-            & > .execute , &>.retry{
-                padding: 5px;
-                box-shadow: 5px 5px 5px black;
-                width:6em;
+            top: -8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            & > *{
+                padding: 4px;
+                // box-shadow: 5px 5px 5px black;
                 background-color: cyan;
                 cursor: pointer;
                 border: none;
                 outline: none;
+                border-radius: 100px;
                 margin: 1px;
+                transition: transform 0.3s ease;
+                &:hover {
+                    transform: scale(1.1);
+                }
             }
 
             &:active{
