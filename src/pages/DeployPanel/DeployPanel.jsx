@@ -1,7 +1,8 @@
-import React,{useState,useEffect} from 'react'
+import React,{useState,useRef , useEffect} from 'react'
 import JSZip from 'jszip';
 import axios from 'axios';
 import Ask from '../../components/Ask/Ask'
+import { nanoid } from 'nanoid';
 import Response from '../../components/Response/Response'
 import SearchBox from '../../components/SearchBox/SearchBox'
 import styles from './DeployPanel.module.scss'
@@ -10,30 +11,63 @@ const defaultPrompts = ["take two strings as parameter and return contatenation 
                         "return object passed in parameter", 
                         "add two number",
                         "return the sum of all numbers in an array"]
-function DeployPanel() {
+function DeployPanel({prompts, setPrompts}) {
     const randomPrompt = defaultPrompts[Math.floor(Math.random() * defaultPrompts.length)]
-    const [prompts, setPrompts] = useState([randomPrompt])
+    const num = useRef(1)
     const chatBoxRef = React.useRef(null)
-    const collection_deploy = React.useRef([]);
+    const [collection, setCollection] = useState([]);
+    useEffect(()=>{
+        console.log(num.current)
+        num.current++;
+    },[])
     function goToLast(){
         setTimeout(()=>{
             const messageBody = chatBoxRef.current;
             messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
         }, 100)
     }
-    function onSend(prompt){
-        setPrompts([...prompts, prompt])
-        goToLast()
+
+    function onLoad(func_name,func_id){
+        goToLast();
+    }
+    function getChatReponse([prompt ,id] ){
+        const element = (
+            <React.Fragment key={id}>
+                <Ask query = {prompt}/>
+                <Response onLoadComplete={onLoad} prompt={prompt} collection={collection} setCollection = {setCollection} responseId= {id}/>
+            </React.Fragment>
+            )
+        return element
     }
 
-    function deploy(){
-        if(collection_deploy.current.length ===0)
+    function onSend(prompt){
+        const id = nanoid();
+        setPrompts([...prompts, [prompt ,id]]);
+    }
+    
+    useEffect(()=>{
+        onSend(randomPrompt);
+    },[])
+
+    function removeItems(ids){
+        const id_set = new Set(ids);
+        const newPrompts = prompts.filter(([prompt, id]) => !id_set.has(id));
+        const newCollections = collection.filter(([func_name, func_def, id]) => !id_set.has(id));
+        setPrompts(newPrompts);
+        setCollection(newCollections);
+    }
+    function deployItems(ids){
+        const id_set = new Set(ids);
+        const deployFunc = collection.filter(([func_name, func_def, id]) => id_set.has(id));
+
+        if(deployFunc.length ===0)
            return alert("No function selected ")
         
         const zip =new JSZip();
         const jsFolder = zip.folder('js');
-        const filename = collection_deploy.current.map(([func_name])=>func_name).join("_");
-        const content = collection_deploy.current.map(([func_name,func_def])=>"module.exports."+ func_def).join("\n\n");
+        const filename = deployFunc.map(([func_name])=>func_name).join("_");
+        const content = deployFunc.map(([func_name,func_def])=>"module.exports."+ func_def).join("\n\n");
+        console.log(content);
         const file = new File([content], `${filename}.js`,{type: "text/plain"});
         jsFolder.file(file.name, file);
         const metacall_json = JSON.stringify([{
@@ -67,25 +101,19 @@ function DeployPanel() {
                 <div className={styles.wrapper_chat}>
                     <div className={styles.chats} ref = {chatBoxRef} >
                     {
-                        prompts.map(prompt=>{
-                            return (
-                                <React.Fragment>
-                                    <Ask query = {prompt}/>
-                                    <Response onLoadComplete={goToLast} key={prompt} prompt={prompt} collection_deploy={collection_deploy}/>
-                                </React.Fragment>
-                            )
-                        })
+                        prompts.map((prompt , index)=>getChatReponse(prompt))
                     }
                     </div>
                 </div>
                 <div className={styles.controller}>
                     <SearchBox placeholder="Ask functionality e.g: print hello world" onEnter={onSend} className={styles.SearchBox}/>
-                    {/* <button onClick={deploy}>
-                        deploy selected Functions
-                    </button> */}
                 </div>
             </div>
-            <SelectionBox selections={new Array(50).fill("hello")} title={"Selected Functions"}/>
+            <SelectionBox selections={collection.map(([func_name, _ , id])=>[func_name , id])} 
+                    title={"Selected Functions"} 
+                    removeItems={removeItems}
+                    deployItems= {deployItems}
+                    />
         </React.Fragment>
     )
 }

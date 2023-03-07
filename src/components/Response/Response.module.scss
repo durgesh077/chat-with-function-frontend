@@ -2,7 +2,7 @@
     display: block;
     width: 100%;
     margin:10px 0;
-    $bgcolor: rgb(47, 140, 163);
+    $bgcolor: black;
     .response_content,.loading{
         position: relative;
         margin-left: 10px;
@@ -12,14 +12,26 @@
         min-height: 50px;
         padding: 20px;
         color: white;
+        .title{
+            display: flex;
+            padding:5px;
+            .lang{
+                font-weight: lighter;
+                font-family: 'Courier New', Courier, monospace;
+                font-style: italic;
+                margin-right: auto;
+            }
+            .function_name{
+                font-weight: bolder;
+                margin-right: 10px;
+            }
+        }
         &:hover{
             box-shadow:  0 0 2rem rgba(0,123,255,.25);
         }
         .definition_body{
-            user-select: all;
-            &::selection{
-                background-color: rgb(89, 160, 54);
-            }
+            margin-top: 10px;
+            display: block;
         }
         .response_checkbox {
             position: absolute;
@@ -51,12 +63,12 @@
             transition: opacity 0.3s ease;
             & > *{
                 padding: 4px;
-                // box-shadow: 5px 5px 5px black;
-                background-color: cyan;
+                background-color: #3f3f3f;
+                border-radius: 3px;
+                color:white;
                 cursor: pointer;
                 border: none;
                 outline: none;
-                border-radius: 100px;
                 margin: 1px;
                 transition: transform 0.3s ease;
                 &:hover {

@@ -36,11 +36,21 @@
       background-color: #f3f3f3;
       border-top-left-radius: 5px;
       border-top-right-radius: 5px;
-      cursor: move;
       user-select: none;
+      .options {
+        background-color: #3f3f3f;
+        border-radius: 5px;
+        padding-left: 6px;
+        padding-right: 6px;
+        color: whitesmoke;
+        cursor: pointer;
+        .menuItem{
+            padding:3px;
+        }
+      }
       .title {
         margin: 0;
-        font-size: 16px;
+        font-size: 13px;
         font-weight: bold;
       }
   
@@ -83,11 +93,26 @@
     }
   
     .selectionItem {
-      padding: 5px;
+      padding: 5px 1em;
+      display: flex;
       cursor: pointer;
-  
+      border-bottom: 2px solid lightgray;
       &:hover {
         background-color: #f3f3f3;
+      }
+      .removeMenu{
+        margin-left: auto;
+        transition: opacity 0.3s ease;
+        background-color: #3f3f3f;
+        box-sizing: border-box;
+        border-radius: 5px;
+        padding: 2px 5px;
+        display: flex;
+        opacity: 0;
+        color: whitesmoke;
+        &:hover{
+          opacity: 1;
+        }
       }
     }
   
@@ -98,6 +123,7 @@
       width: 20px;
       height: 20px;
       background-color: transparent;
+      opacity: 0;
       cursor: nwse-resize;
   
       &::after {

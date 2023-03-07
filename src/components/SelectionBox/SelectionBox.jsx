@@ -1,97 +1,11 @@
-// import React, { useState, useRef } from "react";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faWindowMinimize,faWindowMaximize } from "@fortawesome/free-solid-svg-icons";
-// import styles from "./SelectionBox.module.scss";
-
-// const SelectionBox = ({ selections }) => {
-//   const [isMinimized, setIsMinimized] = useState(false);
-//   const [isDragging, setIsDragging] = useState(false);
-//   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-//   const [position, setPosition] = useState({ x: 20, y: 20 });
-//   const boxRef = useRef();
-  
-//   const handleMinimize = () => {
-//     setIsMinimized(!isMinimized);
-//   };
-
-//   const handleDragStart = (event) => {
-//     event.preventDefault();
-//     setIsDragging(true);
-//     setDragStart({ x: event.clientX, y: event.clientY });
-//   };
-
-//   const handleDrag = (event) => {
-//     event.preventDefault();
-//     if (isDragging) {
-//       const x = event.clientX;
-//       const y =  event.clientY;
-//       setPosition({ x, y });
-//       setDragStart({ x: 0, y: 0 });
-//     }
-//   };
-
-//   const handleDragEnd = () => {
-//     setIsDragging(false);
-//   };
-
-//   const boxStyles = {
-//     right: `${window.innerWidth - position.x}px`,
-//     bottom: `${window.innerHeight - position.y}px`
-//   };
-
-//   const handleSelectionClick = (event) => {
-//     event.stopPropagation();
-//     // Handle selection click logic here
-//   };
-
-//   return (
-//     <div
-//       className={`${styles.selectionBox} ${isMinimized ? styles.minimized : ""}`}
-//       ref={boxRef}
-//       style={boxStyles}
-//       onMouseDown={handleDragStart}
-//       onMouseMove={handleDrag}
-//       onMouseUp={handleDragEnd}
-//     >
-//       <div className={styles.header}>
-//         <h3 className={styles.title}>Selected Items</h3>
-//         <button
-//           className={styles.minimizeButton}
-//           onClick={handleMinimize}
-//           aria-label={isMinimized ? "Maximize" : "Minimize"}
-//         >
-//           { isMinimized? 
-//                 <FontAwesomeIcon icon={faWindowMaximize}/>
-//                 :<FontAwesomeIcon icon={faWindowMinimize}/>
-//           }
-//         </button>
-//         <div className={styles.resizeHandle}></div>
-//       </div>
-//       <div className={styles.selections}>
-//         <ul className={styles.selectionList}>
-//           {selections.map((selection, index) => (
-//             <li
-//               key={index}
-//               className={styles.selectionItem}
-//               onClick={handleSelectionClick}
-//             >
-//               {selection}
-//             </li>
-//           ))}
-//         </ul>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default SelectionBox;
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faWindowMinimize,faWindowMaximize } from "@fortawesome/free-solid-svg-icons";
+import { faWindowMinimize,faWindowMaximize, faUpload, faCancel, faRemove, faTrash, faTrashAlt, faTimes } from "@fortawesome/free-solid-svg-icons";
 import React, { useState, useEffect } from "react";
 import styles from "./SelectionBox.module.scss";
+import ContextMenu from "../ContextMenu/ContextMenu";
+import PromptBox from "../PromptBox/PromptBox";
 
-const SelectionBox = ({ title, selections }) => {
+const SelectionBox = ({ title, selections , removeItems, deployItems }) => {
   const [isMinimized , setIsMinimized] = useState(false);
   const [position, setPosition] = useState({
     x: 10,
@@ -171,29 +85,63 @@ const SelectionBox = ({ title, selections }) => {
         window.addEventListener('mousemove', handleResizeDrag);
         window.addEventListener('mouseup',handleResizeMouseUp);
   };
+
+  const selectMenu = (option , id = null)=>{
+    const ids = id?[id]: selections.map(([name , id])=>id);
+    switch(option){
+        case 'delete':
+          removeItems(ids);
+          break;
+        case 'deploy':
+          deployItems(ids);
+          break;
+        default:
+          console.log("default:", ids);
+    }
+          
+  }
   return (
     <div
       ref={setBoxRef}
       className={styles.selectionBox}
       style={{ bottom: position.y, right: position.x }}
-      onMouseDown={handleMouseDown}
     >
-      <div className={styles.header} >
+      <div className={styles.header}  onMouseDown={handleMouseDown}>
         <h2 className={styles.title}>{title}</h2>
+        <div className={styles.options}>
+            <FontAwesomeIcon icon= {faUpload} title="Deploy" className={styles.menuItem}
+                onClick={
+                  (event)=>{
+                      event.preventDefault();
+                      event.stopPropagation();
+                      selectMenu('deploy');
+                    }
+                  }/>
+                  <PromptBox message={"are you sure to delete"} callback={()=>selectMenu('delete')}/>
+            <FontAwesomeIcon icon= {faTrashAlt} title="Delete" className={styles.menuItem} 
+                onClick={
+                  (event)=>{
+                      event.preventDefault();
+                      event.stopPropagation();
+                    }
+                  }/>
+        </div>
         <button className={styles.minimizeButton} onClick={handleMinimize}>
           {
             isMinimized ?
-            <FontAwesomeIcon icon={faWindowMaximize}/>
-            :<FontAwesomeIcon icon={faWindowMinimize}/>
+            <FontAwesomeIcon icon={faWindowMaximize} title={"maximize"}/>
+            :<FontAwesomeIcon icon={faWindowMinimize} title={"minimize"}/>
           }
         </button>
       </div>
       <div className={styles.selections}>
         <ul className={styles.selectionList}>
-          {selections.map((selection, index) => (
-            <li key={index} className={styles.selectionItem}>
-              {selection}
-            </li>
+          {selections.map(([name , id], index) => (
+            <ContextMenu key={index} options={["deploy","delete"]} onSelect={(option)=>selectMenu(option , id)}>
+              <li  className={styles.selectionItem}>
+                    <span>{name}</span>
+                </li>
+            </ContextMenu>
           ))}
         </ul>
       </div>

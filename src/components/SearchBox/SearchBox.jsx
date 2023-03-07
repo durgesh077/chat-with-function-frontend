@@ -28,14 +28,6 @@ const SearchBox = ({ onEnter,onChange,className,placeholder="" }) => {
         onKeyPress={handleKeyPress}
         ref={ref}
       />
-      {
-        inputValue.length > 0 &&
-        <button className={styles.clearButton} onClick={()=>{
-          onEnter(inputValue);
-          setInputValue("");
-          ref.current.focus();
-        }}>&#8594;</button>
-      }
     </div>
   );
 };

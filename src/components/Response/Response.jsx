@@ -1,18 +1,19 @@
 import React,{ useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faRedo } from '@fortawesome/free-solid-svg-icons'
+import { faCopy, faMinus, faPlay, faPlus, faRedo } from '@fortawesome/free-solid-svg-icons'
 import useGetResponse from '../../customHooks/useGetResponse'
 import ModalCustom from '../Modal/Modal'
 import Execute from './components/Execute'
 import styles from './Response.module.scss'
-export default function Response({ prompt, onLoadComplete , collection_deploy }) {
+export default function Response({ prompt, onLoadComplete , collection , setCollection, responseId ,lang="js" }) {
     const [numDots, setNumDots] = useState(1)
-    const [checked, setChecked] = useState(false);
     const [modal , setModal] = useState(null)
     const countRetry = useRef(0)
     const [renderer , setRenderer] = useState(false);
     const {ask, data:response, error, isLoading:loading} = useGetResponse()
-    const execute = useRef(null)
+    const execute = useRef(null);
+    const wrapperRef = useRef(null);
+    const [added , setAdded ] = useState(false);
     useEffect(()=>{
         if(prompt){
             ask(prompt,{
@@ -28,7 +29,8 @@ export default function Response({ prompt, onLoadComplete , collection_deploy })
 
     useEffect(()=>{
         if(!loading ){
-            onLoadComplete()
+            if(response?.name)
+                onLoadComplete(response?.name ,responseId)
             return
         }
         const interval = setInterval(()=>{
@@ -36,7 +38,7 @@ export default function Response({ prompt, onLoadComplete , collection_deploy })
         }, 300)
         return ()=>clearInterval(interval)
     },[loading])
-    
+
     useLayoutEffect(()=>{
         if(!response){
             execute.current=null
@@ -61,29 +63,27 @@ export default function Response({ prompt, onLoadComplete , collection_deploy })
         setModal(true)
     }
 
-    function handleChange(e){
-        if(checked === false)
-            collection_deploy.current.push([response?.name, response?.function_def])
-        else 
-            collection_deploy.current = collection_deploy.current.filter(([func_name])=>{
-            return func_name !== response?.name
-            })
-
-        setChecked(checked=>!checked);
+    function handleChange(){
+        if(!added)
+            setCollection([...collection,[response?.name, response?.function_def, responseId]])
+        else {
+            console.log("remove\n",collection.filter(([func_name])=>{
+                return func_name !== response?.name
+            }))
+            setCollection(collection.filter(([func_name])=>{
+                return func_name !== response?.name
+            }))
+        }
+        setAdded(!added)
     }
 
-    function handleEffectMounseIn(e){
-        const checkbox = e.target.querySelector("[class*=response_checkbox]")
-        checkbox.style.opacity=1;
-        const menus = e.target.querySelector("[class*=executeWrapper]")
-        menus.style.opacity=1;
+    function handleEffectMounseIn(){
+        if(wrapperRef.current)
+            wrapperRef.current.style.opacity=1;
     }   
-    function handleEffectMounseOut(e){
-        const checkbox = e.target.querySelector("[class*=response_checkbox]")
-        if (!checkbox.checked)
-            checkbox.style.opacity=0;
-        const menus = e.target.querySelector("[class*=executeWrapper]")
-        menus.style.opacity=0;    
+    function handleEffectMounseOut(){
+        if(wrapperRef.current)
+            wrapperRef.current.style.opacity=0;
     }
     return (
         <React.Fragment>
@@ -99,25 +99,31 @@ export default function Response({ prompt, onLoadComplete , collection_deploy })
                     </div>
                     :
                     <pre className={`${styles.response_content} ${error?styles.error:""}`} >
-                        <div className={styles.executeWrapper} id='executionMenu'>
-                            <button onClick={()=>{ countRetry.current=0 ;ask(prompt) }} className={styles.retry}>
-                                <FontAwesomeIcon icon={faRedo}/>
-                            </button>
+                        <div className={styles.title}>
+                            <span className={styles.lang}>{lang} </span> 
+                            <span className={styles.function_name}>{response?.name}</span>
+                        </div>
+                        <hr/>
+                        <div className={styles.executeWrapper} ref={wrapperRef} >
+                            <FontAwesomeIcon icon={faCopy} title="copy" onClick={
+                                ()=>navigator.clipboard.writeText(response?.function_def)
+                            }/>
+
+                            <FontAwesomeIcon icon={faRedo} title={"retry"} onClick={()=>{ countRetry.current=0 ;ask(prompt) }} className={styles.retry}/>
                             {
                                 execute.current?
-                                    <button onClick={handleExecution} className={styles.execute}>
-                                        Execute
-                                    </button>
+                                        <FontAwesomeIcon icon={faPlay} onClick={handleExecution} className={styles.execute} title={'execute'}/>
                                 :
                                 null
                             }
+                            {
+                                added?
+                                <FontAwesomeIcon icon={faMinus} title={"remove"} onClick={handleChange}/>
+                                :
+                                <FontAwesomeIcon icon={faPlus} title={"select"} onClick={handleChange}/>
+                            }
                         </div>
                         <span className={styles.definition_body}>{error? "unable to create function ":response?.function_def}</span>
-                        <input type="checkbox" 
-                                value={checked} 
-                                className={styles.response_checkbox} 
-                                onChange={handleChange}
-                                id= 'responseSelectionCheckbox'/>
                     </pre>
                 }
             </div>

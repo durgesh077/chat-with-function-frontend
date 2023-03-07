@@ -5,7 +5,7 @@ import DeployPanel from '../DeployPanel/DeployPanel';
 import DeployedFunctionPanel from '../DeployedFunctionPanel/DeployedFunctionPanel';
 const Home = () => {
     //choose any of the above prompts randomly
-
+    const [prompts,setPrompts] = useState([]);
     return (
         <div className={styles.home}>
             <div className={styles.head}>
@@ -16,8 +16,8 @@ const Home = () => {
                 Selectors={["Deployed functions","Deploy"]}
                 Panels={[
                     <DeployedFunctionPanel/>,
-                    <DeployPanel />]}
-                />
+                    <DeployPanel prompts={prompts} setPrompts={setPrompts}/>]}
+                /> 
         </div>
     )
     
