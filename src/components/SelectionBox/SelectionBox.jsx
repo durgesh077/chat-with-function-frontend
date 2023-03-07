@@ -1,21 +1,24 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faWindowMinimize,faWindowMaximize, faUpload, faCancel, faRemove, faTrash, faTrashAlt, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faWindowMinimize,faWindowMaximize, faUpload, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import React, { useState, useEffect } from "react";
 import styles from "./SelectionBox.module.scss";
 import ContextMenu from "../ContextMenu/ContextMenu";
-import PromptBox from "../PromptBox/PromptBox";
+import Confirm from "../Confirm/Confirm";
 
 const SelectionBox = ({ title, selections , removeItems, deployItems }) => {
   const [isMinimized , setIsMinimized] = useState(false);
+  const [showPrompt, setShowPrompt] = useState(null);
   const [position, setPosition] = useState({
     x: 10,
     y: 10,
   });
   const [dragging, setDragging] = useState(false);
   const [boxRef, setBoxRef] = useState(null);
-
+  const [optionRef , setOptionRef] = useState(null);
+  const [minimizeRef , setMinimizeRef] = useState(null);
   const handleMouseDown = (event) => {
-    setDragging(true);
+      if(!optionRef.contains(event.target) && !minimizeRef.contains(event.target))
+        setDragging(true);
   };
 
   const handleMouseUp = (event) => {
@@ -101,6 +104,7 @@ const SelectionBox = ({ title, selections , removeItems, deployItems }) => {
           
   }
   return (
+    <React.Fragment>
     <div
       ref={setBoxRef}
       className={styles.selectionBox}
@@ -108,25 +112,33 @@ const SelectionBox = ({ title, selections , removeItems, deployItems }) => {
     >
       <div className={styles.header}  onMouseDown={handleMouseDown}>
         <h2 className={styles.title}>{title}</h2>
-        <div className={styles.options}>
+        <div className={styles.options} ref={setOptionRef}>
             <FontAwesomeIcon icon= {faUpload} title="Deploy" className={styles.menuItem}
                 onClick={
                   (event)=>{
                       event.preventDefault();
                       event.stopPropagation();
-                      selectMenu('deploy');
+                      setShowPrompt({
+                        message: "Are you sure to deploy all",
+                        onOk: ()=>selectMenu('deploy'),
+                        onCancel: ()=>null
+                      });
                     }
                   }/>
-                  <PromptBox message={"are you sure to delete"} callback={()=>selectMenu('delete')}/>
             <FontAwesomeIcon icon= {faTrashAlt} title="Delete" className={styles.menuItem} 
                 onClick={
                   (event)=>{
                       event.preventDefault();
                       event.stopPropagation();
+                      setShowPrompt({
+                        message: "Are you sure to delete all",
+                        onOk: ()=>selectMenu('delete'),
+                        onCancel: ()=>null
+                      });
                     }
                   }/>
         </div>
-        <button className={styles.minimizeButton} onClick={handleMinimize}>
+        <button className={styles.minimizeButton} onClick={handleMinimize} ref={setMinimizeRef}>
           {
             isMinimized ?
             <FontAwesomeIcon icon={faWindowMaximize} title={"maximize"}/>
@@ -147,6 +159,8 @@ const SelectionBox = ({ title, selections , removeItems, deployItems }) => {
       </div>
       <div className={styles.resizeHandle} onMouseDown={handleResize} />
     </div>
+    <Confirm showPrompt={showPrompt} setShowPrompt={setShowPrompt}/>
+    </React.Fragment>
   );
 };
 

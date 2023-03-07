@@ -3,15 +3,12 @@ import styles from './Home.module.scss'
 import Notebook from '../../components/Notebook/Notebook';
 import DeployPanel from '../DeployPanel/DeployPanel';
 import DeployedFunctionPanel from '../DeployedFunctionPanel/DeployedFunctionPanel';
+import Header from './Header/Header';
 const Home = () => {
-    //choose any of the above prompts randomly
     const [prompts,setPrompts] = useState([]);
     return (
         <div className={styles.home}>
-            <div className={styles.head}>
-                <h1>Chat with Functions </h1>
-            </div>
-
+            <Header/>
             <Notebook 
                 Selectors={["Deployed functions","Deploy"]}
                 Panels={[

@@ -5,22 +5,5 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    .head{
-        text-align: center;
-        color: white;
-        height: min-content;
-        padding:5px;
-        width: 100%;
-        margin-top: 0;
-        margin-bottom: 4px;
-        display: block;
-        box-shadow: 0 6px 6px -6px black;
-        position: relative;
-        background-color: darkcyan;
-        h1{
-            display: inline-block;
-        }
-
-    }
 }
 

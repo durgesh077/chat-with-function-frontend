@@ -13,13 +13,8 @@ const defaultPrompts = ["take two strings as parameter and return contatenation 
                         "return the sum of all numbers in an array"]
 function DeployPanel({prompts, setPrompts}) {
     const randomPrompt = defaultPrompts[Math.floor(Math.random() * defaultPrompts.length)]
-    const num = useRef(1)
     const chatBoxRef = React.useRef(null)
     const [collection, setCollection] = useState([]);
-    useEffect(()=>{
-        console.log(num.current)
-        num.current++;
-    },[])
     function goToLast(){
         setTimeout(()=>{
             const messageBody = chatBoxRef.current;
@@ -46,7 +41,8 @@ function DeployPanel({prompts, setPrompts}) {
     }
     
     useEffect(()=>{
-        onSend(randomPrompt);
+        if(!prompts.length)
+            onSend(randomPrompt);
     },[])
 
     function removeItems(ids){
@@ -56,6 +52,7 @@ function DeployPanel({prompts, setPrompts}) {
         setPrompts(newPrompts);
         setCollection(newCollections);
     }
+
     function deployItems(ids){
         const id_set = new Set(ids);
         const deployFunc = collection.filter(([func_name, func_def, id]) => id_set.has(id));
