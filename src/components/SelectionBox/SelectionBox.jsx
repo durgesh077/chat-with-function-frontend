@@ -151,7 +151,7 @@ const SelectionBox = ({ title, selections , removeItems, deployItems }) => {
           {selections.map(([name , id], index) => (
             <ContextMenu key={index} options={["deploy","delete"]} onSelect={(option)=>selectMenu(option , id)}>
               <li  className={styles.selectionItem}>
-                    <span>{name}</span>
+                    <span className={styles.selectionName}>{name}</span>
                 </li>
             </ContextMenu>
           ))}

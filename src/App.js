@@ -1,6 +1,6 @@
 import './App.css';
 import React, { useEffect } from 'react'
-import { QueryClient, QueryClientProvider, useQuery } from 'react-query'
+import { QueryClient, QueryClientProvider, QueryClientConfig } from 'react-query'
 import MessageStack from './components/MessageStack/MessageStack';
 import {
   BrowserRouter,
@@ -10,7 +10,13 @@ import {
 } from "react-router-dom";
 
 import Home from './pages/Home/Home';
-const client  = new QueryClient()
+const client  = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: Infinity,
+    },
+  },
+})
 
 
 function App() {

@@ -6,8 +6,8 @@
 
 }
 *::selection{
-  background: blue;
-  color: #fff;
+  background: cyan;
+  color: #000;
 }
 
 body {

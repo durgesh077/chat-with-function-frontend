@@ -25,11 +25,18 @@ function DeployPanel({prompts, setPrompts}) {
     function onLoad(func_name,func_id){
         goToLast();
     }
+    function removeItems(ids){
+        const id_set = new Set(ids);
+        const newPrompts = prompts.filter(([prompt, id]) => !id_set.has(id));
+        const newCollections = collection.filter(([func_name, func_def, id]) => !id_set.has(id));
+        setPrompts(newPrompts);
+        setCollection(newCollections);
+    }
     function getChatReponse([prompt ,id] ){
         const element = (
             <React.Fragment key={id}>
                 <Ask query = {prompt}/>
-                <Response onLoadComplete={onLoad} prompt={prompt} collection={collection} setCollection = {setCollection} responseId= {id}/>
+                <Response onLoadComplete={onLoad} prompt={prompt} removeResponse={()=>removeItems([id])} collection={collection} setCollection = {setCollection} responseId= {id}/>
             </React.Fragment>
             )
         return element
@@ -45,13 +52,6 @@ function DeployPanel({prompts, setPrompts}) {
             onSend(randomPrompt);
     },[])
 
-    function removeItems(ids){
-        const id_set = new Set(ids);
-        const newPrompts = prompts.filter(([prompt, id]) => !id_set.has(id));
-        const newCollections = collection.filter(([func_name, func_def, id]) => !id_set.has(id));
-        setPrompts(newPrompts);
-        setCollection(newCollections);
-    }
 
     function deployItems(ids){
         const id_set = new Set(ids);

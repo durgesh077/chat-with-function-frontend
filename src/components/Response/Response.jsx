@@ -1,13 +1,15 @@
 import React,{ useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCopy, faMinus, faPlay, faPlus, faRedo } from '@fortawesome/free-solid-svg-icons'
+import { faCopy, faMinus, faPlay, faPlus, faRedo , faTrash } from '@fortawesome/free-solid-svg-icons'
 import useGetResponse from '../../customHooks/useGetResponse'
 import ModalCustom from '../Modal/Modal'
 import Execute from './components/Execute'
 import styles from './Response.module.scss'
-export default function Response({ prompt, onLoadComplete , collection , setCollection, responseId ,lang="js" }) {
+import Confirm from '../Confirm/Confirm'
+export default function Response({ prompt, removeResponse, onLoadComplete , collection , setCollection, responseId ,lang="js" }) {
     const [numDots, setNumDots] = useState(1)
     const [modal , setModal] = useState(null)
+    const [showPrompt , setShowPrompt] = useState(null);
     const countRetry = useRef(0)
     const [renderer , setRenderer] = useState(false);
     const {ask, data:response, error, isLoading:loading} = useGetResponse()
@@ -65,11 +67,8 @@ export default function Response({ prompt, onLoadComplete , collection , setColl
 
     function handleChange(){
         if(!added)
-            setCollection([...collection,[response?.name, response?.function_def, responseId]])
+            setCollection([...collection,[response?.name ?? prompt, response?.function_def, responseId]])
         else {
-            console.log("remove\n",collection.filter(([func_name])=>{
-                return func_name !== response?.name
-            }))
             setCollection(collection.filter(([func_name])=>{
                 return func_name !== response?.name
             }))
@@ -84,6 +83,18 @@ export default function Response({ prompt, onLoadComplete , collection , setColl
     function handleEffectMounseOut(){
         if(wrapperRef.current)
             wrapperRef.current.style.opacity=0;
+    }
+
+    function handleDelete(){
+        setShowPrompt({
+            message:"Delete function",
+            onOk: ()=> {
+                removeResponse();
+                setAdded(false);
+            },
+            onCancel: ()=>null
+        })
+        
     }
     return (
         <React.Fragment>
@@ -117,11 +128,14 @@ export default function Response({ prompt, onLoadComplete , collection , setColl
                                 null
                             }
                             {
-                                added?
+                                execute.current &&
+                                (added?
                                 <FontAwesomeIcon icon={faMinus} title={"remove"} onClick={handleChange}/>
                                 :
                                 <FontAwesomeIcon icon={faPlus} title={"select"} onClick={handleChange}/>
+                                )
                             }
+                            <FontAwesomeIcon icon={faTrash} title = {"delete"} onClick={handleDelete}/>
                         </div>
                         <span className={styles.definition_body}>{error? "unable to create function ":response?.function_def}</span>
                     </pre>
@@ -136,6 +150,7 @@ export default function Response({ prompt, onLoadComplete , collection , setColl
             >
                 <Execute func={execute.current} params={response?.parameter_names??[]}/>
             </ModalCustom>
+            <Confirm showPrompt={showPrompt} setShowPrompt={setShowPrompt}/>
         </React.Fragment>
     )
 }

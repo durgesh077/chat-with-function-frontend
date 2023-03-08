@@ -1,4 +1,7 @@
 .Tabs{
+    box-sizing: border-box;
+    height: calc(100vh - 4em);
+    padding: 0 5px;
     .TabList{
         display: flex;
         place-content: flex-start;

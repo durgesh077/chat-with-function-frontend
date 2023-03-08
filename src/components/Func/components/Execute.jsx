@@ -1,6 +1,5 @@
 import axios from "axios";
 import React, { useEffect,useState } from "react";
-import constants from "../../../constants/constants";
 import styles from './Execute.module.scss'
 
 export default function Execute({func,params}){
@@ -38,7 +37,7 @@ export default function Execute({func,params}){
                     if(!localStorage.getItem("suffix"))
                         alert("please deploy functions first");
                     else  {
-                        let result = await axios.post(constants.metacall_base+`/${localStorage.getItem("suffix")}/js/v1/call/`+func,parameters).then(data=>data.data).catch(console.error)
+                        let result = await axios.post(`/${localStorage.getItem("suffix")}/js/v1/call/`+func,parameters).then(data=>data.data).catch(console.error)
                         setOutput(result)
                     }
                 }}>

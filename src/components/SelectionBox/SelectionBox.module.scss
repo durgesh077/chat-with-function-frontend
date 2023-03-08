@@ -117,6 +117,10 @@
           opacity: 1;
         }
       }
+      .selectionName {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
   
     .resizeHandle {
